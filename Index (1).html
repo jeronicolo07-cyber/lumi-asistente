@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0612">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LUMI">
+<title>LUMI</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────
+   VARIABLES
+───────────────────────────────────── */
+:root {
+  --bg: #0a0612;
+  --surface: rgba(18, 11, 34, 0.85);
+  --surface2: rgba(26, 16, 48, 0.9);
+  --surface-solid: #120b22;
+  --border: rgba(42, 26, 69, 0.8);
+  --border2: rgba(61, 42, 106, 0.9);
+
+  --rose: #f472b6;
+  --violet: #a855f7;
+  --indigo: #818cf8;
+  --amber: #fb923c;
+  --gold: #fbbf24;
+  --emerald: #34d399;
+
+  --text: #d4c5f0;
+  --text-dim: #6b5a8a;
+  --text-bright: #f0eaff;
+
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 20px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+}
+
+/* ─────────────────────────────────────
+   WALLPAPER BACKGROUND
+   Deep cosmic nebula with atom energy
+───────────────────────────────────── */
+.wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #060310;
+}
+
+/* SVG cosmic background rendered via canvas */
+.wallpaper-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Layered nebula orbs */
+.neb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  mix-blend-mode: screen;
+}
+.neb1  { width:80vw; height:80vw; max-width:600px; max-height:600px; background:radial-gradient(circle at 40% 40%, rgba(88,28,135,0.7), transparent 70%); top:-15%; left:-20%; animation:nebDrift1 25s ease-in-out infinite; }
+.neb2  { width:70vw; height:70vw; max-width:500px; max-height:500px; background:radial-gradient(circle, rgba(157,23,77,0.5), transparent 70%); bottom:-10%; right:-15%; animation:nebDrift2 30s ease-in-out infinite; }
+.neb3  { width:50vw; height:50vw; max-width:400px; max-height:400px; background:radial-gradient(circle, rgba(251,146,60,0.25), transparent 70%); top:30%; left:30%; animation:nebDrift3 20s ease-in-out infinite; }
+.neb4  { width:40vw; height:40vw; max-width:320px; max-height:320px; background:radial-gradient(circle, rgba(129,140,248,0.3), transparent 70%); top:10%; right:10%; animation:nebDrift4 35s ease-in-out infinite; }
+.neb5  { width:30vw; height:30vw; max-width:260px; max-height:260px; background:radial-gradient(circle, rgba(244,114,182,0.2), transparent 70%); bottom:20%; left:20%; animation:nebDrift1 28s ease-in-out infinite 3s; }
+
+@keyframes nebDrift1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,20px) scale(1.05)} 66%{transform:translate(-20px,35px) scale(0.97)} }
+@keyframes nebDrift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,-30px) scale(1.08)} }
+@keyframes nebDrift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-20px) scale(1.1)} }
+@keyframes nebDrift4 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-15px,25px)} 66%{transform:translate(25px,-15px)} }
+
+/* Star field */
+.stars {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+}
+@keyframes twinkle { 0%,100%{opacity:0.2} 50%{opacity:1} }
+
+/* Floating atom silhouettes */
+.atom-bg {
+  position: absolute;
+  opacity: 0.04;
+  animation: atomFloat var(--dur, 40s) ease-in-out infinite var(--delay, 0s);
+}
+@keyframes atomFloat {
+  0%,100% { transform: translate(0,0) rotate(0deg); }
+  25%    { transform: translate(20px,-15px) rotate(90deg); }
+  50%    { transform: translate(-10px,-30px) rotate(180deg); }
+  75%    { transform: translate(-25px,-10px) rotate(270deg); }
+}
+
+/* Grid overlay */
+.wallpaper::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events:none;
+}
+
+/* ─────────────────────────────────────
+   HEADER
+───────────────────────────────────── */
+.header {
+  position: relative;
+  z-index: 10;
+  padding: calc(14px + var(--safe-top)) 18px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6,3,16,0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(168,85,247,0.15);
+  flex-shrink: 0;
+}
+
+.header-left { display:flex; align-items:center; gap:12px; }
+
+.atom-logo {
+  width:46px; height:46px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.ar { position:absolute; border-radius:50%; border:1.5px solid; animation:spin linear infinite; }
+.ar1 { inset:0; border-color:rgba(168,85,247,0.75); animation-duration:6s; }
+.ar2 { inset:8px; border-color:rgba(244,114,182,0.55); animation-duration:9s; animation-direction:reverse; }
+.ar3 { inset:17px; border-color:rgba(251,146,60,0.45); animation-duration:4.5s; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.atom-core {
+  width:14px; height:14px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fde68a, #fb923c, #f472b6);
+  box-shadow:0 0 14px rgba(251,146,60,0.9), 0 0 28px rgba(168,85,247,0.5);
+  position:relative; z-index:2;
+  animation:corePulse 2.5s ease-in-out infinite;
+}
+@keyframes corePulse {
+  0%,100%{box-shadow:0 0 14px rgba(251,146,60,0.9),0 0 28px rgba(168,85,247,0.5)}
+  50%{box-shadow:0 0 24px rgba(251,146,60,1),0 0 48px rgba(168,85,247,0.7)}
+}
+
+.lumi-name {
+  font-size:28px; font-weight:800; letter-spacing:4px;
+  background:linear-gradient(135deg, #fde68a 0%, #fb923c 30%, #f472b6 65%, #a855f7 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  line-height:1;
+}
+.lumi-status {
+  font-size:11px; color:var(--text-dim); font-family:var(--mono);
+  display:flex; align-items:center; gap:5px; margin-top:3px;
+}
+.status-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:#34d399; box-shadow:0 0 8px #34d399;
+  animation:blink 2s ease-in-out infinite; flex-shrink:0;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.header-actions { display:flex; gap:8px; }
+.icon-btn {
+  width:38px; height:38px; border-radius:12px;
+  background:rgba(18,11,34,0.7); border:1px solid var(--border);
+  color:var(--text-dim); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:17px; transition:all 0.2s;
+  backdrop-filter:blur(8px);
+}
+.icon-btn:hover,.icon-btn:active { color:var(--rose); border-color:rgba(244,114,182,0.5); background:rgba(244,114,182,0.08); }
+.icon-btn.active { color:var(--rose); border-color:rgba(244,114,182,0.5); background:rgba(244,114,182,0.12); }
+
+/* ─────────────────────────────────────
+   MESSAGES AREA
+───────────────────────────────────── */
+.messages-wrap {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  position:relative; z-index:1;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+.messages-wrap::-webkit-scrollbar { width:3px; }
+.messages-wrap::-webkit-scrollbar-thumb { background:rgba(168,85,247,0.3); border-radius:3px; }
+
+.messages {
+  padding:20px 14px 10px;
+  display:flex; flex-direction:column; gap:14px;
+  min-height:100%; justify-content:flex-end;
+}
+
+/* Welcome */
+.welcome {
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; padding:32px 16px; gap:14px;
+  animation:fadeUp 0.6s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.welcome-atom {
+  width:86px; height:86px; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.wa { position:absolute; border-radius:50%; border:2px solid; animation:spin linear infinite; }
+.wa1{inset:0;border-color:rgba(168,85,247,0.7);animation-duration:7s;}
+.wa2{inset:10px;border-color:rgba(244,114,182,0.55);animation-duration:11s;animation-direction:reverse;}
+.wa3{inset:22px;border-color:rgba(251,146,60,0.45);animation-duration:5.5s;}
+.wa-core{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fde68a,#fb923c,#f472b6,#a855f7);box-shadow:0 0 24px rgba(251,146,60,0.8),0 0 48px rgba(168,85,247,0.5);position:relative;z-index:2;animation:corePulse 3s ease-in-out infinite;}
+
+.welcome h2 {
+  font-size:26px; font-weight:800;
+  background:linear-gradient(135deg,#fde68a,#f472b6,#a855f7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.welcome p { font-size:14px; color:rgba(212,197,240,0.7); max-width:280px; line-height:1.65; font-weight:300; }
+
+.suggestions {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:4px;
+}
+.sug {
+  padding:7px 14px; border-radius:20px; font-size:12px; font-weight:600;
+  background:rgba(18,11,34,0.7); border:1px solid rgba(168,85,247,0.25);
+  color:var(--text); cursor:pointer; transition:all 0.2s;
+  backdrop-filter:blur(8px);
+}
+.sug:hover,.sug:active { border-color:rgba(168,85,247,0.6); color:var(--text-bright); background:rgba(168,85,247,0.1); }
+
+/* Messages */
+.message { display:flex; flex-direction:column; gap:4px; animation:msgIn 0.28s ease; max-width:88%; }
+.message.user { align-self:flex-end; align-items:flex-end; }
+.message.lumi { align-self:flex-start; align-items:flex-start; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.msg-row { display:flex; align-items:flex-end; gap:8px; }
+.message.user .msg-row { flex-direction:row-reverse; }
+
+.msg-av {
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg,#7c3aed,#db2777);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+  box-shadow:0 2px 10px rgba(168,85,247,0.4);
+}
+
+.bubble {
+  padding:12px 16px; border-radius:var(--radius);
+  font-size:15px; line-height:1.6; max-width:100%; word-break:break-word;
+}
+.message.user .bubble {
+  background:linear-gradient(135deg, rgba(88,28,135,0.8), rgba(30,15,61,0.9));
+  border:1px solid rgba(168,85,247,0.35);
+  color:var(--text-bright);
+  border-bottom-right-radius:5px;
+  backdrop-filter:blur(12px);
+}
+.message.lumi .bubble {
+  background:rgba(12,7,22,0.82);
+  border:1px solid rgba(42,26,69,0.9);
+  color:var(--text);
+  border-bottom-left-radius:5px;
+  backdrop-filter:blur(12px);
+}
+
+.msg-time { font-size:10px; color:var(--text-dim); font-family:var(--mono); padding:0 4px; }
+
+.action-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:8px;
+  font-size:10px; font-family:var(--mono); font-weight:700;
+  background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3);
+  color:var(--violet); width:fit-content; margin-top:3px;
+}
+
+/* Typing dots */
+.typing { display:flex; gap:5px; padding:12px 16px; align-items:center; }
+.td { width:7px; height:7px; border-radius:50%; background:var(--text-dim); animation:td 1.2s ease-in-out infinite; }
+.td:nth-child(2){animation-delay:.2s} .td:nth-child(3){animation-delay:.4s}
+@keyframes td { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-5px)} }
+
+/* ─────────────────────────────────────
+   INPUT AREA
+───────────────────────────────────── */
+.input-area {
+  position:relative; z-index:10;
+  padding:10px 14px calc(10px + var(--safe-bottom));
+  background:rgba(6,3,16,0.88);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-top:1px solid rgba(168,85,247,0.12);
+  flex-shrink:0;
+}
+
+/* Debug bar (hidden by default) */
+.debug-bar {
+  display:none;
+  font-family:var(--mono);
+  font-size:10px;
+  color:#f59e0b;
+  background:rgba(120,50,0,0.3);
+  border:1px solid rgba(251,146,60,0.3);
+  border-radius:8px;
+  padding:6px 10px;
+  margin-bottom:8px;
+  word-break:break-all;
+  line-height:1.5;
+}
+.debug-bar.visible { display:block; }
+
+.input-row { display:flex; align-items:flex-end; gap:10px; }
+
+.text-input-wrap {
+  flex:1; background:rgba(18,11,34,0.8);
+  border:1px solid var(--border); border-radius:22px;
+  padding:10px 16px; display:flex; align-items:flex-end; gap:8px;
+  min-height:44px; transition:border-color 0.2s;
+  backdrop-filter:blur(12px);
+}
+.text-input-wrap:focus-within { border-color:rgba(168,85,247,0.6); box-shadow:0 0 0 3px rgba(168,85,247,0.08); }
+
+#text-input {
+  flex:1; background:transparent; border:none; outline:none;
+  color:var(--text-bright); font-family:var(--font); font-size:15px;
+  resize:none; max-height:100px; line-height:1.5;
+}
+#text-input::placeholder { color:var(--text-dim); }
+
+.send-btn {
+  width:44px; height:44px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg, #7c3aed, #db2777);
+  border:none; color:white; font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px rgba(168,85,247,0.45);
+  transition:all 0.2s;
+}
+.send-btn:hover { transform:scale(1.06); box-shadow:0 6px 22px rgba(168,85,247,0.65); }
+.send-btn:active { transform:scale(0.94); }
+.send-btn:disabled { opacity:0.45; transform:none; cursor:not-allowed; }
+
+.mic-btn {
+  width:44px; height:44px; border-radius:50%; flex-shrink:0;
+  background:rgba(18,11,34,0.8); border:1px solid var(--border);
+  color:var(--text-dim); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; backdrop-filter:blur(8px);
+}
+.mic-btn.listening {
+  background:rgba(244,114,182,0.15); border-color:rgba(244,114,182,0.6); color:var(--rose);
+  animation:micPulse 0.9s ease-in-out infinite;
+}
+@keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(244,114,182,0.4)} 50%{box-shadow:0 0 0 9px rgba(244,114,182,0)} }
+
+/* ─────────────────────────────────────
+   VOICE OVERLAY
+───────────────────────────────────── */
+.voice-overlay {
+  position:fixed; inset:0; z-index:50;
+  background:rgba(6,3,16,0.96);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.voice-overlay.active { opacity:1; pointer-events:all; }
+
+.voice-atom { width:150px; height:150px; position:relative; display:flex; align-items:center; justify-content:center; }
+.vr { position:absolute; border-radius:50%; border:2px solid; animation:spin linear infinite; }
+.vr1{inset:0;border-color:rgba(168,85,247,0.85);animation-duration:5s;}
+.vr2{inset:16px;border-color:rgba(244,114,182,0.65);animation-duration:8s;animation-direction:reverse;}
+.vr3{inset:34px;border-color:rgba(251,146,60,0.5);animation-duration:3.5s;}
+.vr4{inset:54px;border-color:rgba(251,191,36,0.4);animation-duration:7s;animation-direction:reverse;}
+.vc{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fde68a,#fb923c,#f472b6,#a855f7);box-shadow:0 0 32px rgba(251,146,60,0.9),0 0 64px rgba(168,85,247,0.6);position:relative;z-index:2;animation:corePulse 2s ease-in-out infinite;}
+
+.waveform { display:flex; align-items:center; gap:5px; height:44px; }
+.wb { width:5px; border-radius:3px; background:linear-gradient(180deg,var(--violet),var(--rose)); min-height:5px; animation:wb 0.7s ease-in-out infinite; }
+.wb:nth-child(1){animation-delay:0s} .wb:nth-child(2){animation-delay:.1s} .wb:nth-child(3){animation-delay:.2s}
+.wb:nth-child(4){animation-delay:.3s} .wb:nth-child(5){animation-delay:.2s} .wb:nth-child(6){animation-delay:.1s} .wb:nth-child(7){animation-delay:0s}
+@keyframes wb { 0%,100%{height:6px} 50%{height:40px} }
+
+.voice-label { font-size:19px; color:var(--text-bright); font-weight:600; text-align:center; }
+.voice-sublabel { font-size:12px; color:var(--text-dim); font-family:var(--mono); text-align:center; min-height:20px; max-width:280px; }
+
+.voice-close {
+  padding:12px 36px; background:rgba(18,11,34,0.8);
+  border:1px solid var(--border2); border-radius:24px;
+  color:var(--text); font-family:var(--font); font-size:14px; font-weight:600;
+  cursor:pointer; transition:all 0.2s; margin-top:8px;
+}
+.voice-close:hover { border-color:rgba(244,114,182,0.5); color:var(--rose); }
+
+/* ─────────────────────────────────────
+   SETTINGS MODAL
+───────────────────────────────────── */
+.modal-overlay {
+  position:fixed; inset:0; z-index:100;
+  background:rgba(6,3,16,0.95);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:0; opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.modal-overlay.active { opacity:1; pointer-events:all; }
+
+.modal {
+  background:var(--surface-solid);
+  border:1px solid rgba(168,85,247,0.25);
+  border-radius:28px 28px 0 0;
+  padding:28px 24px calc(28px + var(--safe-bottom));
+  width:100%; max-width:480px;
+  animation:slideUp 0.35s cubic-bezier(.32,.72,0,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+.modal-handle { width:36px; height:4px; border-radius:2px; background:var(--border2); margin:0 auto 22px; }
+.modal-title { font-size:20px; font-weight:700; color:var(--text-bright); margin-bottom:6px; }
+.modal-desc { font-size:13px; color:var(--text-dim); line-height:1.6; margin-bottom:20px; }
+
+.modal-label { font-size:12px; font-weight:600; color:var(--text-dim); font-family:var(--mono); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; display:block; }
+
+.modal-input {
+  width:100%; background:rgba(6,3,16,0.6);
+  border:1px solid var(--border); border-radius:14px;
+  padding:13px 16px; color:var(--text-bright);
+  font-family:var(--mono); font-size:13px; outline:none;
+  margin-bottom:20px; transition:border-color 0.2s;
+}
+.modal-input:focus { border-color:rgba(168,85,247,0.6); box-shadow:0 0 0 3px rgba(168,85,247,0.08); }
+
+.cors-info {
+  background:rgba(251,146,60,0.08);
+  border:1px solid rgba(251,146,60,0.25);
+  border-radius:12px; padding:12px 14px;
+  font-size:12px; line-height:1.65; color:rgba(251,146,60,0.9);
+  margin-bottom:16px;
+}
+.cors-info strong { color:#fbbf24; }
+
+.modal-save {
+  width:100%; padding:15px;
+  background:linear-gradient(135deg, #7c3aed, #db2777);
+  border:none; border-radius:16px; color:white;
+  font-family:var(--font); font-size:15px; font-weight:700;
+  cursor:pointer; transition:opacity 0.2s;
+  box-shadow:0 4px 16px rgba(168,85,247,0.4);
+}
+.modal-save:hover { opacity:0.9; }
+
+.modal-test {
+  width:100%; padding:12px; margin-top:10px;
+  background:transparent; border:1px solid var(--border2);
+  border-radius:14px; color:var(--text); font-family:var(--font);
+  font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s;
+}
+.modal-test:hover { border-color:rgba(52,211,153,0.5); color:var(--emerald); }
+
+/* ─────────────────────────────────────
+   TOAST
+───────────────────────────────────── */
+.toast {
+  position:fixed; bottom:110px; left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:rgba(18,11,34,0.95); border:1px solid var(--border2);
+  border-radius:20px; padding:10px 20px;
+  font-size:13px; color:var(--text-bright); font-weight:500;
+  z-index:200; opacity:0; transition:all 0.28s; white-space:nowrap;
+  pointer-events:none; backdrop-filter:blur(12px);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ── WALLPAPER ── -->
+<div class="wallpaper">
+  <div class="neb neb1"></div>
+  <div class="neb neb2"></div>
+  <div class="neb neb3"></div>
+  <div class="neb neb4"></div>
+  <div class="neb neb5"></div>
+  <div class="stars" id="stars"></div>
+  <!-- Atom bg silhouettes (injected by JS) -->
+</div>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-left">
+    <div class="atom-logo">
+      <div class="ar ar1"></div>
+      <div class="ar ar2"></div>
+      <div class="ar ar3"></div>
+      <div class="atom-core"></div>
+    </div>
+    <div>
+      <div class="lumi-name">LUMI</div>
+      <div class="lumi-status">
+        <div class="status-dot"></div>
+        <span id="status-txt">lista para ayudarte</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <div class="icon-btn" id="voice-btn" onclick="toggleVoiceMode()" title="Modo voz">🎙</div>
+    <div class="icon-btn" onclick="clearChat()" title="Nueva conversación">✦</div>
+    <div class="icon-btn" onclick="openSettings()" title="Configurar">⚙</div>
+  </div>
+</div>
+
+<!-- ── DEBUG BAR ── -->
+<div class="debug-bar" id="debug-bar">Iniciando debug...</div>
+
+<!-- ── MESSAGES ── -->
+<div class="messages-wrap" id="msgs-wrap">
+  <div class="messages" id="msgs">
+    <div class="welcome" id="welcome">
+      <div class="welcome-atom">
+        <div class="wa wa1"></div>
+        <div class="wa wa2"></div>
+        <div class="wa wa3"></div>
+        <div class="wa-core"></div>
+      </div>
+      <h2>Hola, soy LUMI ⚛</h2>
+      <p>Tu asistente con poderes reales. Puedo enviarte emails, mensajes, llamar contactos, abrir apps y mucho más.</p>
+      <div class="suggestions">
+        <div class="sug" onclick="q('¿Qué puedes hacer por mí?')">¿Qué puedes hacer? ✨</div>
+        <div class="sug" onclick="q('Llama a mamá')">Llamar a mamá 📞</div>
+        <div class="sug" onclick="q('Envía un email de prueba a test@test.com con asunto Hola y cuerpo Esto es una prueba de Lumi')">Prueba email 📧</div>
+        <div class="sug" onclick="q('Abre Spotify')">Abrir Spotify 🎵</div>
+        <div class="sug" onclick="q('Busca las últimas noticias de inteligencia artificial')">Noticias de IA 🌐</div>
+        <div class="sug" onclick="q('Manda un WhatsApp a Juan diciéndole que llego en 10 minutos')">WhatsApp a Juan 💬</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── INPUT ── -->
+<div class="input-area">
+  <div class="input-row">
+    <div class="mic-btn" id="mic-btn" onclick="toggleMic()">🎙</div>
+    <div class="text-input-wrap">
+      <textarea id="text-input" placeholder="Escríbele a LUMI..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="send-btn" id="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- ── VOICE OVERLAY ── -->
+<div class="voice-overlay" id="voice-overlay">
+  <div class="voice-atom">
+    <div class="vr vr1"></div><div class="vr vr2"></div>
+    <div class="vr vr3"></div><div class="vr vr4"></div>
+    <div class="vc"></div>
+  </div>
+  <div class="waveform" id="waveform">
+    <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+    <div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div>
+  </div>
+  <div class="voice-label" id="v-label">Escuchando...</div>
+  <div class="voice-sublabel" id="v-sub">Habla ahora 🎙</div>
+  <button class="voice-close" onclick="stopVoiceMode()">Cerrar modo voz</button>
+</div>
+
+<!-- ── SETTINGS MODAL ── -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙ Conectar LUMI</div>
+    <div class="modal-desc">Pega la URL de tu sitio en <strong>GitHub Pages</strong> o cualquier backend que uses.</div>
+
+    <div class="cors-info">
+      <strong>💡 GitHub Pages:</strong> Tu URL tiene la forma <code>https://tuusuario.github.io/lumi</code>. Pégala tal cual aquí. Si usas otro backend (Railway, Render, etc.), pega su URL directamente.
+    </div>
+
+    <label class="modal-label">URL de LUMI</label>
+    <input type="url" class="modal-input" id="webhook-input"
+      placeholder="https://tuusuario.github.io/lumi">
+
+    <label class="modal-label" style="margin-top:4px">Modo Debug</label>
+    <select class="modal-input" id="debug-select" style="cursor:pointer">
+      <option value="off">Desactivado</option>
+      <option value="on">Activado (muestra errores en pantalla)</option>
+    </select>
+
+    <button class="modal-save" onclick="saveSettings()">Guardar y conectar ✓</button>
+    <button class="modal-test" onclick="testWebhook()">🧪 Probar conexión ahora</button>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────
+// STATE
+// ─────────────────────────────────────
+let WEBHOOK = localStorage.getItem('lumi_webhook') || '';
+let DEBUG   = localStorage.getItem('lumi_debug') === 'on';
+let history = [];
+let listening = false, voiceMode = false, loading = false;
+let recognition = null;
+
+// ─────────────────────────────────────
+// INIT
+// ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildStars();
+  initSR();
+  document.getElementById('webhook-input').value = WEBHOOK;
+  document.getElementById('debug-select').value = DEBUG ? 'on' : 'off';
+  if (DEBUG) document.getElementById('debug-bar').classList.add('visible');
+  if (!WEBHOOK) setTimeout(openSettings, 900);
+});
+
+// ─────────────────────────────────────
+// WALLPAPER — STAR FIELD
+// ─────────────────────────────────────
+function buildStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() < 0.15 ? 3 : Math.random() < 0.4 ? 2 : 1;
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      --dur:${2 + Math.random()*4}s;
+      --delay:${Math.random()*4}s;
+      opacity:${0.1 + Math.random()*0.6};
+    `;
+    container.appendChild(s);
+  }
+}
+
+// ─────────────────────────────────────
+// SETTINGS
+// ─────────────────────────────────────
+function openSettings() {
+  document.getElementById('settings-modal').classList.add('active');
+}
+function saveSettings() {
+  const url   = document.getElementById('webhook-input').value.trim();
+  const dbg   = document.getElementById('debug-select').value;
+  if (!url) { showToast('⚠ Ingresa una URL válida'); return; }
+  WEBHOOK = url;
+  DEBUG   = dbg === 'on';
+  localStorage.setItem('lumi_webhook', url);
+  localStorage.setItem('lumi_debug', dbg);
+  const bar = document.getElementById('debug-bar');
+  DEBUG ? bar.classList.add('visible') : bar.classList.remove('visible');
+  document.getElementById('settings-modal').classList.remove('active');
+  showToast('✓ URL guardada — LUMI conectada');
+  if (DEBUG) setDebug(`URL guardada: ${url}`);
+}
+document.getElementById('settings-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('settings-modal'))
+    document.getElementById('settings-modal').classList.remove('active');
+});
+
+// ─────────────────────────────────────
+// TEST WEBHOOK
+// ─────────────────────────────────────
+async function testWebhook() {
+  const url = document.getElementById('webhook-input').value.trim();
+  if (!url) { showToast('⚠ Primero ingresa la URL'); return; }
+  showToast('🧪 Probando conexión...');
+  try {
+    const r = await fetchLumi(url, 'ping: responde con "LUMI online"', []);
+    if (r && r.response) {
+      showToast('✅ Conexión exitosa: ' + r.response.slice(0,40));
+    } else {
+      showToast('⚠ Respuesta inesperada del webhook');
+    }
+  } catch(e) {
+    showToast('❌ Error: ' + e.message.slice(0,50));
+    if (DEBUG) setDebug('Test error: ' + e.message);
+  }
+}
+
+// ─────────────────────────────────────
+// CORE FETCH — CORS FIXED
+// ─────────────────────────────────────
+async function fetchLumi(url, text, msgHistory) {
+  /*
+   * Envía el mensaje a tu URL (GitHub Pages, Railway, Render, etc.)
+   * La URL se guarda en localStorage y se configura desde ⚙.
+   */
+  const payload = JSON.stringify({
+    text:    text,
+    history: msgHistory.slice(-8),
+    source:  'pwa',
+    userId:  'lumi-user'
+  });
+
+  if (DEBUG) setDebug(`→ POST ${url}\nPayload: ${payload.slice(0,120)}...`);
+
+  const res = await fetch(url, {
+    method:  'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept':        'application/json'
+    },
+    body: payload
+  });
+
+  if (DEBUG) setDebug(`← Status: ${res.status} ${res.statusText}`);
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status}: ${errText.slice(0,100)}`);
+  }
+
+  const data = await res.json();
+  if (DEBUG) setDebug(`← Response: ${JSON.stringify(data).slice(0,200)}`);
+  return data;
+}
+
+// ─────────────────────────────────────
+// SEND MESSAGE
+// ─────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+function q(text) {
+  document.getElementById('text-input').value = text;
+  sendMsg();
+}
+
+async function sendMsg() {
+  if (loading) return;
+  const inp  = document.getElementById('text-input');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  if (!WEBHOOK) {
+    showToast('⚠ Configura el webhook primero');
+    openSettings(); return;
+  }
+
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  addBubble('user', text);
+  history.push({ role:'user', content:text });
+  inp.value = ''; inp.style.height = 'auto';
+
+  const tid = showTyping();
+  loading = true;
+  setStatus('pensando...');
+  document.getElementById('send-btn').disabled = true;
+
+  try {
+    const data = await fetchLumi(WEBHOOK, text, history);
+
+    removeTyping(tid);
+    const resp     = data.response   || data.message   || data.text   || '✦';
+    const ttsText  = data.tts_text   || resp;
+    const action   = data.action_taken;
+
+    addBubble('lumi', resp, action);
+    history.push({ role:'assistant', content:resp });
+
+    if (voiceMode) speak(ttsText);
+    setStatus('lista para ayudarte');
+
+  } catch(err) {
+    removeTyping(tid);
+    const isCorsProblem = err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('CORS');
+    const msg = isCorsProblem
+      ? '❌ Error de conexión. Verificá que tu URL sea correcta y que el servidor esté activo. Activá el Debug en ⚙ para ver el error exacto.'
+      : '❌ ' + err.message;
+
+    addBubble('lumi', msg);
+    if (DEBUG) setDebug('ERROR: ' + err.message + '\n' + err.stack);
+    setStatus('error · verificar configuración');
+    setTimeout(() => setStatus('lista para ayudarte'), 4000);
+  }
+
+  loading = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+// ─────────────────────────────────────
+// BUBBLES & CHAT
+// ─────────────────────────────────────
+function addBubble(role, text, action) {
+  const msgs = document.getElementById('msgs');
+  const now  = new Date().toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
+
+  const ICONS  = { enviar_correo_gmail:'📧', send_email:'📧', enviar_whatsapp:'💬', send_whatsapp:'💬', abrir_app:'📱', open_app:'📱', buscar_internet:'🌐', search:'🌐', realizar_llamada:'📞', call:'📞', direct_response:'✦', general_query:'✦' };
+  const LABELS = { enviar_correo_gmail:'Email enviado', send_email:'Email enviado', enviar_whatsapp:'WhatsApp enviado', send_whatsapp:'WhatsApp enviado', abrir_app:'App abierta', open_app:'App abierta', buscar_internet:'Búsqueda web', search:'Búsqueda web', realizar_llamada:'Llamada iniciada', call:'Llamada iniciada', direct_response:'Respuesta directa', general_query:'Respuesta directa' };
+
+  const badge = (action && action !== 'direct_response' && action !== 'general_query')
+    ? `<div class="action-badge">${ICONS[action]||'⚡'} ${LABELS[action]||action}</div>` : '';
+
+  const el = document.createElement('div');
+  el.className = `message ${role}`;
+  if (role === 'lumi') {
+    el.innerHTML = `<div class="msg-row"><div class="msg-av">⚛</div><div class="bubble">${esc(text)}</div></div>${badge}<div class="msg-time">${now}</div>`;
+  } else {
+    el.innerHTML = `<div class="msg-row"><div class="bubble">${esc(text)}</div></div><div class="msg-time">${now}</div>`;
+  }
+  msgs.appendChild(el);
+  scrollBottom();
+}
+
+function showTyping() {
+  const id = 'typ-' + Date.now();
+  const msgs = document.getElementById('msgs');
+  const el = document.createElement('div');
+  el.id = id; el.className = 'message lumi';
+  el.innerHTML = `<div class="msg-row"><div class="msg-av">⚛</div><div class="bubble"><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
+  msgs.appendChild(el); scrollBottom();
+  return id;
+}
+function removeTyping(id) { document.getElementById(id)?.remove(); }
+
+function clearChat() {
+  history = [];
+  document.getElementById('msgs').innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-atom"><div class="wa wa1"></div><div class="wa wa2"></div><div class="wa wa3"></div><div class="wa-core"></div></div>
+      <h2>Nueva conversación ✦</h2>
+      <p>¿Qué necesitas hacer ahora?</p>
+      <div class="suggestions">
+        <div class="sug" onclick="q('Llama a papá')">Llamar a papá 📞</div>
+        <div class="sug" onclick="q('Envía un email de prueba a test@test.com con asunto Hola y cuerpo Prueba de Lumi')">Prueba email 📧</div>
+        <div class="sug" onclick="q('Abre YouTube')">Abrir YouTube ▶</div>
+        <div class="sug" onclick="q('Busca el clima de hoy en Buenos Aires')">Clima hoy 🌤</div>
+        <div class="sug" onclick="q('Manda un WhatsApp a María diciéndole que ya salí')">WhatsApp a María 💬</div>
+      </div>
+    </div>`;
+  showToast('✦ Nueva conversación');
+}
+
+function scrollBottom() {
+  setTimeout(() => { const w = document.getElementById('msgs-wrap'); w.scrollTop = w.scrollHeight; }, 60);
+}
+function setStatus(t) { document.getElementById('status-txt').textContent = t; }
+function setDebug(t) {
+  const bar = document.getElementById('debug-bar');
+  bar.textContent = '🐛 ' + t;
+  bar.classList.add('visible');
+}
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+// ─────────────────────────────────────
+// SPEECH RECOGNITION (STT)
+// ─────────────────────────────────────
+function initSR() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    ['mic-btn','voice-btn'].forEach(id => { const el=document.getElementById(id); if(el){ el.style.opacity='0.35'; el.title='Tu navegador no soporta reconocimiento de voz'; } });
+    return;
+  }
+  recognition = new SR();
+  recognition.continuous  = false;
+  recognition.interimResults = true;
+  recognition.lang = 'es-ES';
+
+  recognition.onstart = () => {
+    listening = true;
+    document.getElementById('mic-btn').classList.add('listening');
+    setStatus('escuchando...');
+  };
+
+  recognition.onresult = e => {
+    const t = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('text-input').value = t;
+    autoResize(document.getElementById('text-input'));
+    if (voiceMode) document.getElementById('v-sub').textContent = t;
+    if (e.results[e.results.length-1].isFinal && voiceMode) {
+      setTimeout(() => sendMsg(), 350);
+    }
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    document.getElementById('mic-btn').classList.remove('listening');
+    if (!voiceMode) setStatus('lista para ayudarte');
+    if (voiceMode && !loading) setTimeout(() => { if(voiceMode) startListening(); }, 1200);
+  };
+
+  recognition.onerror = e => {
+    listening = false;
+    document.getElementById('mic-btn').classList.remove('listening');
+    if (e.error === 'not-allowed') showToast('⚠ Permiso de micrófono denegado');
+    if (DEBUG) setDebug('SR error: ' + e.error);
+  };
+}
+
+function toggleMic() { listening ? recognition?.stop() : startListening(); }
+function startListening() {
+  if (!recognition) { showToast('⚠ Sin soporte de voz en este navegador'); return; }
+  try { recognition.start(); } catch(e) {}
+}
+
+// ─────────────────────────────────────
+// VOICE MODE (continuo)
+// ─────────────────────────────────────
+function toggleVoiceMode() { voiceMode ? stopVoiceMode() : startVoiceMode(); }
+
+function startVoiceMode() {
+  if (!recognition) { showToast('⚠ Sin soporte de voz'); return; }
+  voiceMode = true;
+  document.getElementById('voice-overlay').classList.add('active');
+  document.getElementById('voice-btn').classList.add('active');
+  document.getElementById('v-label').textContent = 'Escuchando...';
+  document.getElementById('v-sub').textContent   = 'Habla ahora 🎙';
+  waveActive(true);
+  startListening();
+}
+
+function stopVoiceMode() {
+  voiceMode = false;
+  recognition?.stop();
+  window.speechSynthesis?.cancel();
+  document.getElementById('voice-overlay').classList.remove('active');
+  document.getElementById('voice-btn').classList.remove('active');
+  waveActive(false);
+  setStatus('lista para ayudarte');
+}
+
+function waveActive(on) {
+  document.querySelectorAll('.wb').forEach((b,i) => {
+    b.style.animation = on ? `wb ${0.5 + i*0.07}s ease-in-out infinite ${i*0.07}s` : 'none';
+    if (!on) b.style.height = '6px';
+  });
+}
+
+// ─────────────────────────────────────
+// TTS
+// ─────────────────────────────────────
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/[⚛✦📧💬📱🌐📞✉️✓❌⚠]/g,'').trim();
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang  = 'es-ES'; u.rate = 1.05; u.pitch = 1.0; u.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang.startsWith('es') && /elena|dalia|google|microsoft/i.test(v.name))
+         || voices.find(v => v.lang.startsWith('es'));
+  if (v) u.voice = v;
+  if (voiceMode) {
+    u.onstart = () => { document.getElementById('v-label').textContent = 'LUMI está hablando...'; };
+    u.onend   = () => { document.getElementById('v-label').textContent = 'Escuchando...'; document.getElementById('v-sub').textContent = 'Habla ahora 🎙'; };
+  }
+  window.speechSynthesis.speak(u);
+}
+
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+// ─────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
